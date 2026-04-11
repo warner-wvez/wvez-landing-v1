@@ -479,25 +479,89 @@
 
     /* MOBILE */
     @media (max-width: 768px) {
+      /* === LAYOUT: Switch to vertical scroll === */
+      html, body {
+        height: auto;
+        overflow: auto;
+        overflow-x: hidden;
+      }
+
+      .strip {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: auto;
+        padding-top: 3.5rem;
+        padding-bottom: 0;
+      }
+
+      .panel {
+        width: 100%;
+        height: auto;
+        min-height: 100vh; /* fallback for browsers without svh */
+        min-height: 100svh;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 3rem 1.5rem;
+        padding-bottom: 100px; /* room for landmark at bottom */
+      }
+
+      /* === HERO === */
+      #hero {
+        min-height: calc(100vh - 3.5rem); /* fallback */
+        min-height: calc(100svh - 3.5rem);
+        padding-top: 0;
+        padding-bottom: 100px;
+      }
+
+      .hero-spacer {
+        width: 150px;
+        height: 150px;
+        margin-bottom: 1.5rem;
+      }
+
+      .hero-text h1 {
+        font-size: 1.4rem;
+        line-height: 1.6rem;
+        padding: 0 1rem;
+      }
+
+      /* === SLIDER BAR: Hide container, landmarks move via JS === */
+      .slider-bar {
+        display: none;
+      }
+
+      /* Landmark styling when inside a panel (JS moves them there) */
+      .panel .slider-landmark {
+        position: absolute !important;
+        bottom: 10px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        height: 70px !important;
+        max-height: 70px !important;
+        opacity: 0.2 !important;
+        pointer-events: none !important;
+        filter: invert(1) brightness(2) contrast(0.8);
+        z-index: 0;
+        padding: 0 !important;
+      }
+
+      /* === NAV === */
       nav {
         padding: 0 1.25rem;
       }
 
-      .hero-text h1 {
-        font-size: 1.6rem;
-        padding: 0 1rem;
-      }
-
-      .slider-bar {
-        height: 40px;
-      }
-
+      /* === ABOUT === */
       .about-content {
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
+        padding: 0 1.25rem;
         max-width: 100%;
       }
 
+      /* === WARNER: Stack vertically === */
       .warner-content {
         flex-direction: column-reverse;
         text-align: center;
@@ -505,21 +569,21 @@
 
       .warner-left {
         width: 100%;
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
+        padding: 0 1.25rem;
       }
 
       .warner-right {
         width: 100%;
-        padding-right: 0;
+        padding: 0;
         margin-bottom: 2rem;
       }
 
       .warner-headshot {
         width: 50vw;
-        max-height: 40vh;
+        max-height: 35vh;
       }
 
+      /* === VENTURES: Stack rows === */
       .venture-row {
         flex-direction: column;
         gap: 0.75rem;
@@ -529,14 +593,44 @@
         min-width: auto;
       }
 
+      /* === SERVICES: Single column === */
       .services-content {
         grid-template-columns: 1fr;
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
+        padding: 0 1.25rem;
+        gap: 1rem;
       }
 
+      /* === CONTACT === */
       .contact-email {
         font-size: 1rem;
+        word-break: break-all;
+      }
+
+      /* === GLOBAL: Section content always visible on mobile === */
+      /* Desktop uses scroll-position-based show/hide. Mobile doesn't need it. */
+      .section-content {
+        opacity: 1 !important;
+      }
+
+      /* === READABILITY: Enforce minimum text sizes === */
+      .section-body p,
+      .venture-desc,
+      .service-desc,
+      .contact-tagline {
+        font-size: 0.8125rem; /* 13px body copy minimum */
+      }
+
+      .venture-cat,
+      .warner-left .section-role,
+      .contact-location,
+      .services-cta a {
+        font-size: 0.6875rem; /* 11px minimum */
+      }
+
+      /* === HAMBURGER === */
+      .hamburger {
+        right: 1.25rem;
+        padding: 13px 10px; /* 44x44 touch target */
       }
     }
 
@@ -901,6 +995,8 @@
     });
   }
 
+  const isMobile = () => window.innerWidth <= 768;
+
   // Pendant morph system
   const navLogo = document.querySelector('.nav-logo');
   const heroText = document.getElementById('hero-text');
@@ -910,8 +1006,12 @@
 
   function getHeroPos() {
     const availH = window.innerHeight - navH - 48;
-    const heroSize = Math.min(window.innerHeight * 0.6, 400);
-    const totalH = heroSize + taglineAllowance;
+    const mobile = isMobile();
+    const heroSize = mobile
+      ? Math.min(window.innerHeight * 0.3, 180)
+      : Math.min(window.innerHeight * 0.6, 400);
+    const tagline = mobile ? 120 : taglineAllowance;
+    const totalH = heroSize + tagline;
     return {
       size: heroSize,
       top: navH + (availH - totalH) / 2,
@@ -920,19 +1020,20 @@
   }
 
   function updatePendantMorph() {
-    const progress = Math.min(scrollCurrent / window.innerWidth, 1);
+    const mobile = isMobile();
+    const progress = mobile
+      ? Math.min(window.scrollY / (window.innerHeight * 0.6), 1)
+      : Math.min(scrollCurrent / window.innerWidth, 1);
 
     const hero = getHeroPos();
     const heroSize = hero.size;
     const heroTop = hero.top;
     const heroLeft = hero.left;
 
-    // Nav state position: right of logo text, vertically centered in nav
     const logoRect = navLogo.getBoundingClientRect();
     const navTop = (navH - navSize) / 2;
     const navLeft = 2 * 16;
 
-    // Interpolate
     const size = heroSize + (navSize - heroSize) * progress;
     const top = heroTop + (navTop - heroTop) * progress;
     const left = heroLeft + (navLeft - heroLeft) * progress;
@@ -942,14 +1043,11 @@
     pendant.style.top = top + 'px';
     pendant.style.left = left + 'px';
 
-    // Pointer events: none during transition
     pendant.style.pointerEvents = (progress > 0.05 && progress < 0.95) ? 'none' : 'auto';
 
-    // Fade hero-text: fully visible at 0, gone by 0.5
     const textOpacity = Math.max(0, 1 - progress * 2);
     heroText.style.opacity = textOpacity;
 
-    // Nav logo padding to make room for pendant in nav state
     const logoPad = 48 * progress;
     navLogo.style.paddingLeft = logoPad + 'px';
   }
@@ -987,6 +1085,11 @@ const landmarkPositions = [25, 38, 48, 57, 66, 75];
 
   // Smooth lerp animation loop
   function updateScroll() {
+    if (isMobile()) {
+      requestAnimationFrame(updateScroll);
+      return;
+    }
+
     scrollCurrent += (scrollTarget - scrollCurrent) * ease;
 
     if (Math.abs(scrollTarget - scrollCurrent) < 0.5) {
@@ -1036,6 +1139,7 @@ const landmarkPositions = [25, 38, 48, 57, 66, 75];
   }
 
   function onDragStart(e) {
+    if (isMobile()) return;
     e.preventDefault();
     dragging = true;
     const progress = getTrackX(e);
@@ -1043,6 +1147,7 @@ const landmarkPositions = [25, 38, 48, 57, 66, 75];
   }
 
   function onDragMove(e) {
+    if (isMobile()) return;
     if (!dragging) return;
     e.preventDefault();
     const progress = getTrackX(e);
@@ -1081,6 +1186,7 @@ const landmarkPositions = [25, 38, 48, 57, 66, 75];
   // Scroll wheel navigation — one scroll gesture = one section jump
   let wheelLocked = false;
   window.addEventListener('wheel', (e) => {
+    if (isMobile()) return; // native scroll handles it
     e.preventDefault();
     if (wheelLocked) return;
     wheelLocked = true;
@@ -1135,7 +1241,11 @@ const landmarkPositions = [25, 38, 48, 57, 66, 75];
       const id = link.dataset.section;
       const index = Array.from(panels).findIndex(p => p.id === id);
       if (index >= 0) {
-        goToSection(index);
+        if (isMobile()) {
+          panels[index].scrollIntoView({ behavior: 'smooth' });
+        } else {
+          goToSection(index);
+        }
       }
       closeMenu();
     });
@@ -1146,9 +1256,49 @@ const landmarkPositions = [25, 38, 48, 57, 66, 75];
   });
 
   // Handle resize
+  let wasMobile = isMobile();
   window.addEventListener('resize', () => {
+    const nowMobile = isMobile();
+    if (wasMobile !== nowMobile) {
+      location.reload();
+    }
+    wasMobile = nowMobile;
     scrollTarget = Math.min(scrollTarget, getMaxScroll());
   });
+
+  // Mobile scroll listener for pendant morph
+  window.addEventListener('scroll', () => {
+    if (isMobile()) {
+      updatePendantMorph();
+    }
+  }, { passive: true });
+
+  // Move landmarks into panels on mobile
+  function setupMobileLandmarks() {
+    if (!isMobile()) return;
+
+    const panelIds = ['hero', 'about', 'warner', 'ventures', 'services', 'contact'];
+    const landmarkImgs = document.querySelectorAll('.slider-landmark');
+
+    landmarkImgs.forEach((lm, i) => {
+      if (i < panelIds.length) {
+        const panel = document.getElementById(panelIds[i]);
+        if (panel) {
+          // Clear inline styles from desktop slider positioning
+          lm.style.left = '';
+          lm.style.bottom = '';
+          lm.style.height = '';
+          lm.style.maxHeight = '';
+          lm.style.maxWidth = '';
+          lm.style.transform = '';
+          // Move the element into the panel
+          panel.appendChild(lm);
+        }
+      }
+    });
+  }
+
+  setupMobileLandmarks();
 
   // Make venture rows fully clickable
   document.querySelectorAll('.venture-row').forEach(row => {
