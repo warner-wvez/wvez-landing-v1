@@ -800,25 +800,29 @@
     <!-- SERVICES -->
     <section class="panel" id="services">
       <div class="section-content services-content" id="services-content">
-        <div class="section-title">What I Build</div>
+        <div class="section-title">What I Solve</div>
 
-        <div class="service-name">Automated Workflows</div>
-        <div class="service-desc">You're doing the same thing every day and it's eating your time. I build the system that does it for you: data collection, notifications, scheduled tasks, multi-step pipelines.</div>
-
-        <div class="section-divider"></div>
-
-        <div class="service-name">Competitive Intelligence</div>
-        <div class="service-desc">Know what your competitors are doing before your customers tell you. Pricing, inventory, product launches, monitored and delivered on schedule.</div>
+        <div class="service-name">You're doing it manually. Every day.</div>
+        <div class="service-desc">If you're copying data between tabs, sending the same follow-ups, or running reports by hand, that's a system waiting to be built. I automate the repetitive so you can focus on the work that actually moves the needle.</div>
 
         <div class="section-divider"></div>
 
-        <div class="service-name">Custom Integrations</div>
-        <div class="service-desc">Your tools don't talk to each other. If it has an API, I can make it connect to everything else in your stack.</div>
+        <div class="service-name">You don't know what they're charging.</div>
+        <div class="service-desc">Your competitors change pricing, drop new products, and shift inventory while you're not looking. I build monitoring systems that track it all and deliver it to you on a schedule. No checking. No guessing.</div>
 
         <div class="section-divider"></div>
 
-        <div class="service-name">Brand Systems</div>
-        <div class="service-desc">Landing pages, dashboards, internal tools. Designed to match your brand, built to last longer than a redesign cycle.</div>
+        <div class="service-name">Your tools don't talk to each other.</div>
+        <div class="service-desc">You're using five platforms and none of them share data. If it has an API, I connect it. Your CRM talks to your spreadsheet, your inbox talks to your database, and you stop being the middleman.</div>
+
+        <div class="section-divider"></div>
+
+        <div class="service-name">Your online presence doesn't match your brand.</div>
+        <div class="service-desc">You've outgrown the template. I build landing pages, dashboards, and internal tools that look like your brand and work the way your business actually operates.</div>
+
+        <div style="margin-top: 2.5rem; text-align: right;">
+          <a href="mailto:warner@wvez.org" style="font-family: var(--font); font-size: 0.65rem; letter-spacing: 0.12em; color: var(--fg); text-decoration: none; text-transform: uppercase; transition: opacity 0.2s ease;" onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='1'">Tell me what's eating your time &#8594;</a>
+        </div>
       </div>
     </section>
 
@@ -1138,8 +1142,11 @@ const landmarkPositions = [25, 38, 48, 57, 66, 75];
 
   // Make venture rows fully clickable
   document.querySelectorAll('.venture-row').forEach(row => {
+    row.style.cursor = 'pointer';
     row.addEventListener('click', (e) => {
-      if (e.target.closest('a')) return;
+      const inlineLink = e.target.closest('a:not(.venture-title)');
+      if (inlineLink) return;
+      e.preventDefault();
       const link = row.querySelector('.venture-title');
       if (link) window.open(link.href, '_blank');
     });
