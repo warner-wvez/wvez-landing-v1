@@ -768,7 +768,7 @@
 <body>
 
   <!-- GLOBAL BACKGROUND VIDEO -->
-  <video id="global-bg-video" muted loop playsinline preload="auto" autoplay src="https://pub-2b72d9c0a9f649e99699874d22247129.r2.dev/16296848-uhd_3840_2160_24fps.mp4"></video>
+  <video id="global-bg-video" muted loop playsinline webkit-playsinline preload="auto" autoplay src="https://pub-2b72d9c0a9f649e99699874d22247129.r2.dev/16296848-uhd_3840_2160_24fps.mp4"></video>
 
   <!-- NAV -->
   <nav>
@@ -996,6 +996,9 @@
   }
 
   const isMobile = () => window.innerWidth <= 768;
+  let mobileScrollY = 0;
+  let mobileScrollCurrent = 0;
+  const mobileEase = 0.1;
 
   // Pendant morph system
   const navLogo = document.querySelector('.nav-logo');
@@ -1022,7 +1025,7 @@
   function updatePendantMorph() {
     const mobile = isMobile();
     const progress = mobile
-      ? Math.min(window.scrollY / (window.innerHeight * 0.6), 1)
+      ? Math.min(mobileScrollCurrent / (window.innerHeight * 0.6), 1)
       : Math.min(scrollCurrent / window.innerWidth, 1);
 
     const hero = getHeroPos();
@@ -1266,12 +1269,25 @@ const landmarkPositions = [25, 38, 48, 57, 66, 75];
     scrollTarget = Math.min(scrollTarget, getMaxScroll());
   });
 
-  // Mobile scroll listener for pendant morph
+  // Mobile scroll: capture target value (smooth interpolation happens in mobileAnimationLoop)
   window.addEventListener('scroll', () => {
     if (isMobile()) {
-      updatePendantMorph();
+      mobileScrollY = window.scrollY;
     }
   }, { passive: true });
+
+  // Mobile pendant morph: smooth 60fps animation loop (mirrors desktop lerp pattern)
+  function mobileAnimationLoop() {
+    if (isMobile()) {
+      mobileScrollCurrent += (mobileScrollY - mobileScrollCurrent) * mobileEase;
+      if (Math.abs(mobileScrollY - mobileScrollCurrent) < 0.5) {
+        mobileScrollCurrent = mobileScrollY;
+      }
+      updatePendantMorph();
+    }
+    requestAnimationFrame(mobileAnimationLoop);
+  }
+  requestAnimationFrame(mobileAnimationLoop);
 
   // Move landmarks into panels on mobile
   function setupMobileLandmarks() {
@@ -1299,6 +1315,34 @@ const landmarkPositions = [25, 38, 48, 57, 66, 75];
   }
 
   setupMobileLandmarks();
+
+  // Force background video play on mobile (iOS Safari autoplay workaround)
+  const bgVideo = document.getElementById('global-bg-video');
+  if (bgVideo) {
+    const tryPlay = () => {
+      const p = bgVideo.play();
+      if (p !== undefined) {
+        p.catch(() => {
+          const forcePlay = () => {
+            bgVideo.play();
+            document.removeEventListener('touchstart', forcePlay);
+            document.removeEventListener('scroll', forcePlay);
+          };
+          document.addEventListener('touchstart', forcePlay, { once: true });
+          document.addEventListener('scroll', forcePlay, { once: true });
+        });
+      }
+    };
+    tryPlay();
+  }
+
+  // Initialize pendant position on mobile immediately
+  if (isMobile() && pendant) {
+    updatePendantMorph();
+    pendant.addEventListener('load', () => {
+      updatePendantMorph();
+    });
+  }
 
   // Make venture rows fully clickable
   document.querySelectorAll('.venture-row').forEach(row => {
