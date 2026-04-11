@@ -178,6 +178,12 @@
       margin: 1.25rem 0;
     }
 
+    .services-cta {
+      grid-column: 1 / -1;
+      text-align: left;
+      margin-top: 0.5rem;
+    }
+
     /* ABOUT: centered */
     .about-content {
       position: relative;
@@ -331,21 +337,28 @@
       letter-spacing: 0.03em;
     }
 
-    /* SERVICES: right-aligned */
+    /* SERVICES: 2x2 grid */
     .services-content {
-      max-width: 500px;
       width: 100%;
-      padding-right: 10%;
-      align-self: flex-end;
-      text-align: right;
+      padding: 0 8%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem 4rem;
+      align-content: center;
     }
 
     .services-content .section-title {
-      text-align: right;
+      grid-column: 1 / -1;
+      text-align: left;
+      margin-bottom: 0.5rem;
+    }
+
+    .service-item {
+      padding: 1.25rem 0;
     }
 
     .service-name {
-      font-size: 0.8rem;
+      font-size: 0.7rem;
       font-weight: 600;
       letter-spacing: 0.1em;
       color: var(--fg);
@@ -353,7 +366,7 @@
     }
 
     .service-desc {
-      font-size: 0.75rem;
+      font-size: 0.68rem;
       font-weight: 400;
       color: #a0a0a0;
       line-height: 1.7;
@@ -517,14 +530,9 @@
       }
 
       .services-content {
+        grid-template-columns: 1fr;
         padding-left: 1.5rem;
         padding-right: 1.5rem;
-        max-width: 100%;
-        text-align: left;
-      }
-
-      .services-content .section-title {
-        text-align: left;
       }
 
       .contact-email {
@@ -802,25 +810,27 @@
       <div class="section-content services-content" id="services-content">
         <div class="section-title">What I Solve</div>
 
-        <div class="service-name">You're doing it manually. Every day.</div>
-        <div class="service-desc">If you're copying data between tabs, sending the same follow-ups, or running reports by hand, that's a system waiting to be built. I automate the repetitive so you can focus on the work that actually moves the needle.</div>
+        <div class="service-item">
+          <div class="service-name">You're doing it manually. Every day.</div>
+          <div class="service-desc">If you're copying data between tabs, sending the same follow-ups, or running reports by hand, that's a system waiting to be built. I automate the repetitive so you can focus on the work that actually moves the needle.</div>
+        </div>
 
-        <div class="section-divider"></div>
+        <div class="service-item">
+          <div class="service-name">You don't know what they're charging.</div>
+          <div class="service-desc">Your competitors change pricing, drop new products, and shift inventory while you're not looking. I build monitoring systems that track it all and deliver it to you on a schedule. No checking. No guessing.</div>
+        </div>
 
-        <div class="service-name">You don't know what they're charging.</div>
-        <div class="service-desc">Your competitors change pricing, drop new products, and shift inventory while you're not looking. I build monitoring systems that track it all and deliver it to you on a schedule. No checking. No guessing.</div>
+        <div class="service-item">
+          <div class="service-name">Your tools don't talk to each other.</div>
+          <div class="service-desc">You're using five platforms and none of them share data. If it has an API, I connect it. Your CRM talks to your spreadsheet, your inbox talks to your database, and you stop being the middleman.</div>
+        </div>
 
-        <div class="section-divider"></div>
+        <div class="service-item">
+          <div class="service-name">Your online presence doesn't match your brand.</div>
+          <div class="service-desc">You've outgrown the template. I build landing pages, dashboards, and internal tools that look like your brand and work the way your business actually operates.</div>
+        </div>
 
-        <div class="service-name">Your tools don't talk to each other.</div>
-        <div class="service-desc">You're using five platforms and none of them share data. If it has an API, I connect it. Your CRM talks to your spreadsheet, your inbox talks to your database, and you stop being the middleman.</div>
-
-        <div class="section-divider"></div>
-
-        <div class="service-name">Your online presence doesn't match your brand.</div>
-        <div class="service-desc">You've outgrown the template. I build landing pages, dashboards, and internal tools that look like your brand and work the way your business actually operates.</div>
-
-        <div style="margin-top: 2.5rem; text-align: right;">
+        <div class="services-cta">
           <a href="mailto:warner@wvez.org" style="font-family: var(--font); font-size: 0.65rem; letter-spacing: 0.12em; color: var(--fg); text-decoration: none; text-transform: uppercase; transition: opacity 0.2s ease;" onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='1'">Tell me what's eating your time &#8594;</a>
         </div>
       </div>
