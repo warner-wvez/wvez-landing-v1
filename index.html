@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WVEZ Solutions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #000000;
+      --fg: #f5f5f5;
+      --muted: #6e6e6e;
+      --border: #2a2a2a;
+      --font: "IBM Plex Mono", monospace;
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Custom bean cursor — desktop only */
+    @media (pointer: fine) {
+      body {
+        cursor: url('Gemini_Generated_Image_8ls7x18ls7x18ls7-Picsart-BackgroundRemover.png') 16 16, auto;
+      }
+    }
+
+    /* GLOBAL BACKGROUND VIDEO */
+    #global-bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 0;
+      pointer-events: none;
+      filter: grayscale(100%) brightness(0.25) contrast(1.3);
+      opacity: 0.45;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3.5rem;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--fg);
+    }
+
+
+    /* HORIZONTAL STRIP */
+    .strip {
+      display: flex;
+      height: 100vh;
+      width: max-content;
+      padding-top: 3.5rem;
+      padding-bottom: -55px;
+      will-change: transform;
+      position: relative;
+      z-index: 2;
+    }
+
+    .panel {
+      width: 100vw;
+      height: calc(100vh - 3.5rem - 48px);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* HERO */
+    #hero {
+      overflow: hidden;
+    }
+
+    #pendant {
+      position: fixed;
+      z-index: 101;
+      background: transparent;
+    }
+
+    .hero-spacer {
+      position: relative;
+      z-index: 1;
+      width: min(30vh, 200px);
+      height: min(30vh, 200px);
+      margin-bottom: 5em;
+      pointer-events: none;
+    }
+
+    .hero-text {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .hero-text h1 {
+      font-size: 2rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      line-height: 2rem;
+      color: var(--fg);
+    }
+
+    /* SECTION CONTENT (shared) */
+    .section-content {
+      opacity: 0;
+      transition: opacity 0.8s ease-out;
+    }
+
+    .section-content.visible {
+      opacity: 1;
+    }
+
+    .section-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      color: var(--fg);
+      margin-bottom: 1.5rem;
+    }
+
+    .section-body p {
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: #a0a0a0;
+      line-height: 1.6;
+      letter-spacing: 0.03em;
+      margin-bottom: 1rem;
+      text-transform: none;
+    }
+
+    .section-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-divider {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      margin: 1.25rem 0;
+    }
+
+    /* ABOUT: centered */
+    .about-content {
+      position: relative;
+      z-index: 1;
+      max-width: 650px;
+      width: 100%;
+      padding: 0 2rem;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .about-content .section-subtitle {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--fg);
+      margin-bottom: 0.2rem;
+    }
+
+    /* WARNER: two-column bio */
+    .warner-panel {
+      align-items: center;
+      justify-content: center;
+    }
+
+    .warner-content {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .warner-left {
+      max-width: 500px;
+      width: 60%;
+      padding-left: 8%;
+    }
+
+    .warner-left .section-role {
+      font-size: 0.6rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .warner-right {
+      width: 40%;
+      padding-right: 8%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .warner-headshot {
+      max-height: 55vh;
+      width: auto;
+      object-fit: contain;
+      opacity: 0.75;
+      filter: grayscale(50%);
+      mask-image: radial-gradient(ellipse 75% 75% at center, black 40%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 75% 75% at center, black 40%, transparent 100%);
+    }
+
+    /* VENTURES */
+    #ventures {
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .ventures-content {
+      width: 100%;
+      padding: 2rem 8%;
+    }
+
+    .ventures-grid {
+      width: 100%;
+      margin-top: 2rem;
+    }
+
+    .venture-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 3rem;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .venture-row:last-child {
+      border-bottom: none;
+    }
+
+    .venture-name {
+      min-width: 200px;
+      flex-shrink: 0;
+    }
+
+    .venture-title {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      font-family: var(--font);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--fg);
+      text-transform: uppercase;
+    }
+
+    .venture-title-text {
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .venture-arrow {
+      position: absolute;
+      left: 0;
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      font-size: 1.1rem;
+      color: var(--fg);
+    }
+
+    .venture-row:hover .venture-title-text {
+      transform: translateX(30px);
+      opacity: 0;
+    }
+
+    .venture-row:hover .venture-arrow {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .venture-cat {
+      font-family: var(--font);
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-top: 0.25rem;
+      text-transform: capitalize;
+    }
+
+    .venture-desc {
+      font-family: var(--font);
+      font-size: 0.72rem;
+      line-height: 1.6;
+      color: #a0a0a0;
+      letter-spacing: 0.03em;
+    }
+
+    /* SERVICES: right-aligned */
+    .services-content {
+      max-width: 500px;
+      width: 100%;
+      padding-right: 10%;
+      align-self: flex-end;
+      text-align: right;
+    }
+
+    .services-content .section-title {
+      text-align: right;
+    }
+
+    .service-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--fg);
+      margin-bottom: 0.5rem;
+    }
+
+    .service-desc {
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: #a0a0a0;
+      line-height: 1.7;
+      text-transform: none;
+      letter-spacing: 0.03em;
+    }
+
+    /* CONTACT: centered, large */
+    .contact-content {
+      text-align: center;
+    }
+
+    .contact-tagline {
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: #a0a0a0;
+      letter-spacing: 0.05em;
+      text-transform: none;
+      margin-bottom: 1.5rem;
+    }
+
+    .contact-email {
+      font-size: 1.4rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--fg);
+      text-decoration: none;
+      text-transform: none;
+      transition: opacity 0.2s ease;
+      display: inline-block;
+    }
+
+    .contact-email:hover {
+      opacity: 0.7;
+    }
+
+    .contact-location {
+      font-size: 0.65rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-top: 1.25rem;
+    }
+
+    /* SLIDER BAR */
+    .slider-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background: transparent;
+      z-index: 100;
+    }
+
+    .slider-track {
+      position: absolute;
+      bottom: 0;
+      left: 25%;
+      width: 50%;
+      height: 80px;
+      background: transparent;
+      cursor: pointer;
+      z-index: 0;
+    }
+
+    .slider-landmark {
+      position: absolute;
+      top: auto;
+      transform: translateX(-50%);
+      filter: invert(1) brightness(2) contrast(0.8);
+      opacity: 0.3;
+      mix-blend-mode: normal;
+      transition: opacity 0.3s ease;
+      pointer-events: auto;
+      cursor: pointer;
+      padding: 15px 25px;
+      z-index: 1;
+      background: none !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .slider-landmark:hover,
+    .slider-landmark:active,
+    .slider-landmark:focus {
+      background: none !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    .track-dot {
+      position: absolute;
+      bottom: 38px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #444;
+      transform: translateX(-50%);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .slider-handle {
+      display: none;
+    }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      nav {
+        padding: 0 1.25rem;
+      }
+
+      .hero-text h1 {
+        font-size: 1.6rem;
+        padding: 0 1rem;
+      }
+
+      .slider-bar {
+        height: 40px;
+      }
+
+      .about-content {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        max-width: 100%;
+      }
+
+      .warner-content {
+        flex-direction: column-reverse;
+        text-align: center;
+      }
+
+      .warner-left {
+        width: 100%;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+
+      .warner-right {
+        width: 100%;
+        padding-right: 0;
+        margin-bottom: 2rem;
+      }
+
+      .warner-headshot {
+        width: 50vw;
+        max-height: 40vh;
+      }
+
+      .venture-row {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .venture-name {
+        min-width: auto;
+      }
+
+      .services-content {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        max-width: 100%;
+        text-align: left;
+      }
+
+      .services-content .section-title {
+        text-align: left;
+      }
+
+      .contact-email {
+        font-size: 1rem;
+      }
+    }
+
+    /* HAMBURGER BUTTON */
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      position: fixed;
+      top: 1rem;
+      right: 2rem;
+      z-index: 301;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--fg);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .hamburger.open span:nth-child(1) {
+      transform: translateY(8px) rotate(45deg);
+    }
+
+    .hamburger.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.open span:nth-child(3) {
+      transform: translateY(-8px) rotate(-45deg);
+    }
+
+    /* MENU OVERLAY */
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: auto;
+      width: 280px;
+      height: 100vh;
+      background: #000000;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+
+    .menu-overlay.open {
+      transform: translateX(0);
+    }
+
+    .menu-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 199;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .menu-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .menu-overlay-nav {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      width: 100%;
+      text-align: center;
+      padding-top: 4rem;
+    }
+
+    .menu-overlay-nav a {
+      font-family: var(--font);
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.2s ease;
+    }
+
+    .menu-overlay-nav a:hover {
+      color: var(--fg);
+    }
+
+    .menu-overlay-footer {
+      position: absolute;
+      bottom: 3rem;
+      text-align: center;
+    }
+
+    .menu-overlay-footer a {
+      font-family: var(--font);
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: none;
+      display: block;
+    }
+
+    .menu-overlay-footer .menu-location {
+      font-size: 0.6rem;
+      color: var(--muted);
+      opacity: 0.5;
+      margin-top: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- GLOBAL BACKGROUND VIDEO -->
+  <video id="global-bg-video" muted loop playsinline preload="auto" autoplay src="16296848-uhd_3840_2160_24fps.mp4"></video>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">wvez solutions</div>
+  </nav>
+
+  <!-- HAMBURGER (fixed, always on top) -->
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- MENU OVERLAY -->
+  <div class="menu-backdrop" id="menu-backdrop"></div>
+  <div class="menu-overlay" id="menu-overlay">
+    <nav class="menu-overlay-nav">
+      <a href="#hero" data-section="hero">HOME</a>
+      <a href="#about" data-section="about">ABOUT</a>
+      <a href="#warner" data-section="warner">WARNER</a>
+      <a href="#ventures" data-section="ventures">VENTURES</a>
+      <a href="#services" data-section="services">SERVICES</a>
+      <a href="#contact" data-section="contact">CONTACT</a>
+    </nav>
+    <div class="menu-overlay-footer">
+      <a href="mailto:warner@wvez.org">warner@wvez.org</a>
+      <div class="menu-location">Chicago, IL</div>
+    </div>
+  </div>
+
+  <!-- HORIZONTAL STRIP -->
+  <div class="strip" id="strip">
+
+    <!-- HERO -->
+    <section class="panel" id="hero">
+      <div class="hero-spacer"></div>
+      <div class="hero-text" id="hero-text">
+        <h1>Hard Problems.<br>EZ Solutions.</h1>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="panel" id="about">
+      <div class="section-content about-content" id="about-content">
+        <div class="section-title">ABOUT</div>
+        <div class="section-subtitle" style="margin-bottom: 2rem; text-transform: none;">"I wonder if..."</div>
+        <div class="section-body">
+          <p>WVEZ is for anyone with an idea or problem. Even if you're just getting started, or already know what needs to be built, everything starts with a problem worth solving. I'm here to not only build that solution for you, but to do it with YOUR input.</p>
+          <p>Business, creator, or student: I build custom-tailored systems and processes around your personalbrand. Data pipelines, 24/7 competitor inventory dashboards, automated workflows, or full web design. Whatever it takes to close the gap between where you are and where you should be. Every system is built by hand, thoroughly-tested, and designed with the same passion that goes into operating your brand.</p>
+          <p>I also build my own systems. Each of my independent projects started as a problem I felt wasn't being solved with the best intentions by others, so I solved it myself. I use it, refine it, and release it. 
+            <p>Whether you're a business owner, creator, or anything in between, people only see the results. WVEZ strives to make that result the best it can be.</p>
+        </div>
+        <div style="margin-top: 3rem; text-align: center;">
+          <a href="https://jobze.io" target="_blank" style="font-family: var(--font); font-size: 0.6rem; letter-spacing: 0.15em; color: var(--muted); text-decoration: none; text-transform: uppercase; opacity: 0.5; transition: opacity 0.2s ease;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='0.5'">See what I'm building right now</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- WARNER -->
+    <section class="panel warner-panel" id="warner">
+      <div class="section-content warner-content" id="warner-content">
+        <div class="warner-left">
+          <div class="section-title">WARNER VARNADO</div>
+          <div class="section-role">Founder</div>
+          <div class="section-body">
+            <p>Chicago. Clemson. Loyola. Four internships at a Fortune 500. Fully self-taught.</p>
+            <p>Everything on this site was built personally by me and only me. Even the site itself. No outsourcing builds to Ai, no templates framed as "custom." I listen to the problems related to your brand, build the system, and sit with you each step of the way to ensure you get your solution.</p>
+            <p>WVEZ is far more than a service to me. It's a passion and purpose. Too often solutions are built without understanding the real problem. I pride myself on taking the time to listen, learn, and understand before building.</p>
+          </div>
+        </div>
+        <div class="warner-right">
+          <img src="Headshot.jpg" alt="Warner Varnado" class="warner-headshot">
+        </div>
+      </div>
+    </section>
+
+    <!-- VENTURES -->
+    <section class="panel" id="ventures">
+      <div class="section-content ventures-content" id="ventures-content">
+        <div class="section-title">VENTURES</div>
+        <div class="ventures-grid">
+
+          <div class="venture-row">
+            <div class="venture-name">
+              <a href="WVEZ JOBZE PORTFOLIO.html" class="venture-title" target="_blank">
+                <span class="venture-title-text">JOBZE</span>
+                <span class="venture-arrow">&#8594;</span>
+              </a>
+              <div class="venture-cat">Job search assistant</div>
+            </div>
+            <div class="venture-desc">Built a Slack-native AI assistant that researches roles, rewrites resumes per position, runs interview prep, and logs everything to a spreadsheet. No tab switching, no copy-paste. Currently in beta at <a href="https://jobze.io" target="_blank" style="color: var(--fg); text-decoration: underline;">jobze.io</a>.</div>
+          </div>
+
+          <div class="venture-row">
+            <div class="venture-name">
+              <a href="WVEZ RECON PORTFOLIO.html" class="venture-title" target="_blank">
+                <span class="venture-title-text">RECON</span>
+                <span class="venture-arrow">&#8594;</span>
+              </a>
+              <div class="venture-cat">Competitive intelligence</div>
+            </div>
+            <div class="venture-desc">Pulls live inventory and pricing from competitor stores on a schedule, compares it side by side, and delivers reports that show exactly where a business is winning or losing on price. Built for a real client. Runs without anyone lifting a finger.</div>
+          </div>
+
+          <div class="venture-row">
+            <div class="venture-name">
+              <a href="WVEZ eBay Portfolio.html" class="venture-title" target="_blank">
+                <span class="venture-title-text">FLIPPR</span>
+                <span class="venture-arrow">&#8594;</span>
+              </a>
+              <div class="venture-cat">Resale arbitrage</div>
+            </div>
+            <div class="venture-desc">Scans eBay every five minutes across 35+ product categories, pulls real sold comps, calculates net profit after all fees and shipping, and only sends a buy alert when the math guarantees money. Started reselling sneakers in middle school. Automated the whole thing.</div>
+          </div>
+
+          <div class="venture-row">
+            <div class="venture-name">
+              <a href="WVEZ Content PORTFOLIO.html" class="venture-title" target="_blank">
+                <span class="venture-title-text">Content Recipe</span>
+                <span class="venture-arrow">&#8594;</span>
+              </a>
+              <div class="venture-cat">Content auditing</div>
+            </div>
+            <div class="venture-desc">Scrapes a creator's Instagram, runs AI analysis on every video's first 10 seconds, and delivers a full engagement breakdown showing exactly which content types drive growth. Built to turn gut-feel posting into data-backed strategy.</div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section class="panel" id="services">
+      <div class="section-content services-content" id="services-content">
+        <div class="section-title">What I Build</div>
+
+        <div class="service-name">Automated Workflows</div>
+        <div class="service-desc">You're doing the same thing every day and it's eating your time. I build the system that does it for you: data collection, notifications, scheduled tasks, multi-step pipelines.</div>
+
+        <div class="section-divider"></div>
+
+        <div class="service-name">Competitive Intelligence</div>
+        <div class="service-desc">Know what your competitors are doing before your customers tell you. Pricing, inventory, product launches, monitored and delivered on schedule.</div>
+
+        <div class="section-divider"></div>
+
+        <div class="service-name">Custom Integrations</div>
+        <div class="service-desc">Your tools don't talk to each other. If it has an API, I can make it connect to everything else in your stack.</div>
+
+        <div class="section-divider"></div>
+
+        <div class="service-name">Brand Systems</div>
+        <div class="service-desc">Landing pages, dashboards, internal tools. Designed to match your brand, built to last longer than a redesign cycle.</div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="panel" id="contact">
+      <div class="section-content contact-content" id="contact-content">
+        <div class="section-title">Contact</div>
+        <div class="contact-tagline">Got a hard problem? I have an EZ solution.</div>
+        <a href="mailto:warner@wvez.org" class="contact-email">warner@wvez.org</a>
+        <div class="contact-location">Chicago, IL</div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- SLIDER -->
+  <div class="slider-bar" id="slider-bar">
+    <div class="slider-track" id="slider-track">
+      <div class="slider-handle" id="slider-handle"></div>
+    </div>
+<img src="soldier.png" class="slider-landmark" style="left: 25%; bottom: -45px; height: 168px; max-height: none; max-width: none; transform: translateX(-50%);" alt="Soldier Field">
+<div class="track-dot" style="left: 33%;"></div>
+<img src="field.png" class="slider-landmark" style="left: 38%; bottom: -18px; height: 115px; max-height: none; max-width: none;" alt="Field Museum">
+<div class="track-dot" style="left: 43%;"></div>
+<img src="willis.png" class="slider-landmark" style="left: 48%; bottom: -11px; height: 127px; max-height: none; max-width: none;" alt="Willis Tower">
+<div class="track-dot" style="left: 53%;"></div>
+<img src="aon.png" class="slider-landmark" style="left: 57%; bottom: -8px; height: 112px; max-height: none; max-width: none;" alt="Aon Center">
+<div class="track-dot" style="left: 62%;"></div>
+<img src="crain.png" class="slider-landmark" style="left: 66%; bottom: -6px; height: 120px; max-height: none; max-width: none;" alt="Crain Building">
+<div class="track-dot" style="left: 71%;"></div>
+<img src="875.png" class="slider-landmark" style="left: 75%; bottom: -17px; height: 160px; max-height: none; max-width: none; transform: translateX(-50%);" alt="875 Michigan">  </div>
+
+  <!-- PENDANT (fixed, morphs between hero and nav) -->
+  <model-viewer
+    id="pendant"
+    src="https://raw.githubusercontent.com/wvarnadoluc-jpg/WVEZ-Logo/5429feaaa4997071364a34af3934aaef586254d5/logo.glb"
+    camera-orbit="180deg 90deg auto"
+    field-of-view="26deg"
+    exposure="1.15"
+    disable-zoom
+    interaction-prompt="none"
+    style="background: transparent;"
+  ></model-viewer>
+
+</body>
+
+<script>
+  // Pendant sway animation
+  const pendant = document.getElementById('pendant');
+  const frontAzimuth = 180;
+  const amplitude = 14;
+  const period = 5000;
+  const polar = 90;
+
+  function animatePendant(now) {
+    const phase = (now / period) * Math.PI * 2;
+    const sinVal = Math.sin(phase);
+    const azimuth = frontAzimuth + sinVal * amplitude;
+    pendant.setAttribute('camera-orbit', `${azimuth.toFixed(2)}deg ${polar}deg auto`);
+    requestAnimationFrame(animatePendant);
+  }
+
+  if (pendant) {
+    pendant.addEventListener('load', () => {
+      requestAnimationFrame(animatePendant);
+    });
+  }
+
+  // Pendant morph system
+  const navLogo = document.querySelector('.nav-logo');
+  const heroText = document.getElementById('hero-text');
+  const navH = 56; // 3.5rem
+  const navSize = 36;
+  const taglineAllowance = 200; // two lines at 2.8rem + 3rem gap
+
+  function getHeroPos() {
+    const availH = window.innerHeight - navH - 48;
+    const heroSize = Math.min(window.innerHeight * 0.6, 400);
+    const totalH = heroSize + taglineAllowance;
+    return {
+      size: heroSize,
+      top: navH + (availH - totalH) / 2,
+      left: (window.innerWidth - heroSize) / 2
+    };
+  }
+
+  function updatePendantMorph() {
+    const progress = Math.min(scrollCurrent / window.innerWidth, 1);
+
+    const hero = getHeroPos();
+    const heroSize = hero.size;
+    const heroTop = hero.top;
+    const heroLeft = hero.left;
+
+    // Nav state position: right of logo text, vertically centered in nav
+    const logoRect = navLogo.getBoundingClientRect();
+    const navTop = (navH - navSize) / 2;
+    const navLeft = 2 * 16;
+
+    // Interpolate
+    const size = heroSize + (navSize - heroSize) * progress;
+    const top = heroTop + (navTop - heroTop) * progress;
+    const left = heroLeft + (navLeft - heroLeft) * progress;
+
+    pendant.style.width = size + 'px';
+    pendant.style.height = size + 'px';
+    pendant.style.top = top + 'px';
+    pendant.style.left = left + 'px';
+
+    // Pointer events: none during transition
+    pendant.style.pointerEvents = (progress > 0.05 && progress < 0.95) ? 'none' : 'auto';
+
+    // Fade hero-text: fully visible at 0, gone by 0.5
+    const textOpacity = Math.max(0, 1 - progress * 2);
+    heroText.style.opacity = textOpacity;
+
+    // Nav logo padding to make room for pendant in nav state
+    const logoPad = 48 * progress;
+    navLogo.style.paddingLeft = logoPad + 'px';
+  }
+
+  // Horizontal scroll engine
+  const strip = document.getElementById('strip');
+  const panels = document.querySelectorAll('.panel');
+  const sliderTrack = document.getElementById('slider-track');
+  const sliderHandle = document.getElementById('slider-handle');
+  const landmarks = document.querySelectorAll('.slider-landmark');
+
+  let scrollTarget = 0;
+  let scrollCurrent = 0;
+  const ease = 0.08;
+  let dragging = false;
+
+  function getMaxScroll() {
+    return (panels.length - 1) * window.innerWidth;
+  }
+
+  function getProgress() {
+    const max = getMaxScroll();
+    return max > 0 ? scrollCurrent / max : 0;
+  }
+
+  // Landmark positions as percentages
+const landmarkPositions = [25, 38, 48, 57, 66, 75];
+  // Update slider visuals
+  function updateSlider() {
+    const activeIndex = Math.max(0, Math.min(Math.round(scrollCurrent / window.innerWidth), panels.length - 1));
+    landmarks.forEach((lm, i) => {
+      lm.style.opacity = (i === activeIndex) ? '0.7' : '0.3';
+    });
+  }
+
+  // Smooth lerp animation loop
+  function updateScroll() {
+    scrollCurrent += (scrollTarget - scrollCurrent) * ease;
+
+    if (Math.abs(scrollTarget - scrollCurrent) < 0.5) {
+      scrollCurrent = scrollTarget;
+    }
+
+    strip.style.transform = `translateX(${-scrollCurrent}px)`;
+    updateSlider();
+    updateSectionVisibility();
+    updatePendantMorph();
+    requestAnimationFrame(updateScroll);
+  }
+
+  requestAnimationFrame(updateScroll);
+
+  // Show/hide section content based on current scroll position
+  const sectionContents = document.querySelectorAll('.section-content');
+  function updateSectionVisibility() {
+    const currentSection = Math.round(scrollCurrent / window.innerWidth);
+    sectionContents.forEach(el => {
+      const panel = el.closest('.panel');
+      const index = Array.from(panels).indexOf(panel);
+      if (index === currentSection) {
+        el.classList.add('visible');
+      } else {
+        el.classList.remove('visible');
+      }
+    });
+  }
+
+  // Get normalized position on track (0-1)
+  function getTrackX(e) {
+    const touch = e.touches ? e.touches[0] : e;
+    const rect = sliderTrack.getBoundingClientRect();
+    return Math.max(0, Math.min(touch.clientX - rect.left, rect.width)) / rect.width;
+  }
+
+  // Snap to nearest section index
+  function snapToSection(rawProgress) {
+    const step = 1 / (panels.length - 1);
+    const index = Math.round(rawProgress / step);
+    return Math.min(index, panels.length - 1);
+  }
+
+  function goToSection(index) {
+    scrollTarget = index * window.innerWidth;
+  }
+
+  function onDragStart(e) {
+    e.preventDefault();
+    dragging = true;
+    const progress = getTrackX(e);
+    scrollTarget = progress * getMaxScroll();
+  }
+
+  function onDragMove(e) {
+    if (!dragging) return;
+    e.preventDefault();
+    const progress = getTrackX(e);
+    scrollTarget = progress * getMaxScroll();
+  }
+
+  function onDragEnd() {
+    if (dragging) {
+      // Snap to nearest section on release
+      const progress = scrollTarget / getMaxScroll();
+      const index = snapToSection(progress);
+      goToSection(index);
+    }
+    dragging = false;
+  }
+
+  // Mouse events
+  sliderHandle.addEventListener('mousedown', onDragStart);
+  sliderTrack.addEventListener('mousedown', onDragStart);
+  window.addEventListener('mousemove', onDragMove);
+  window.addEventListener('mouseup', onDragEnd);
+
+  // Touch events
+  sliderHandle.addEventListener('touchstart', onDragStart, { passive: false });
+  sliderTrack.addEventListener('touchstart', onDragStart, { passive: false });
+  window.addEventListener('touchmove', onDragMove, { passive: false });
+  window.addEventListener('touchend', onDragEnd);
+
+  // Click on track snaps to nearest section
+  sliderTrack.addEventListener('click', (e) => {
+    const rawProgress = getTrackX(e);
+    const index = snapToSection(rawProgress);
+    goToSection(index);
+  });
+
+  // Scroll wheel navigation — one scroll gesture = one section jump
+  let wheelLocked = false;
+  window.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    if (wheelLocked) return;
+    wheelLocked = true;
+    const currentIndex = Math.round(scrollCurrent / window.innerWidth);
+    if (e.deltaY > 0 && currentIndex < panels.length - 1) {
+      goToSection(currentIndex + 1);
+    } else if (e.deltaY < 0 && currentIndex > 0) {
+      goToSection(currentIndex - 1);
+    }
+    setTimeout(() => { wheelLocked = false; }, 800);
+  }, { passive: false });
+
+  // Click landmarks to navigate to sections
+  landmarks.forEach((lm, i) => {
+    lm.style.cursor = 'pointer';
+    lm.style.pointerEvents = 'auto';
+    lm.addEventListener('click', (e) => {
+      e.stopPropagation();
+      goToSection(i);
+    });
+  });
+
+  // Hamburger menu
+  const hamburger = document.getElementById('hamburger');
+  const menuOverlay = document.getElementById('menu-overlay');
+  const menuBackdrop = document.getElementById('menu-backdrop');
+  let menuOpen = false;
+
+  function openMenu() {
+    menuOpen = true;
+    hamburger.classList.add('open');
+    menuOverlay.classList.add('open');
+    menuBackdrop.classList.add('open');
+  }
+
+  function closeMenu() {
+    menuOpen = false;
+    hamburger.classList.remove('open');
+    menuOverlay.classList.remove('open');
+    menuBackdrop.classList.remove('open');
+  }
+
+  menuBackdrop.addEventListener('click', closeMenu);
+
+  hamburger.addEventListener('click', () => {
+    menuOpen ? closeMenu() : openMenu();
+  });
+
+  document.querySelectorAll('.menu-overlay-nav a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = link.dataset.section;
+      const index = Array.from(panels).findIndex(p => p.id === id);
+      if (index >= 0) {
+        goToSection(index);
+      }
+      closeMenu();
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menuOpen) closeMenu();
+  });
+
+  // Handle resize
+  window.addEventListener('resize', () => {
+    scrollTarget = Math.min(scrollTarget, getMaxScroll());
+  });
+</script>
+</html>
