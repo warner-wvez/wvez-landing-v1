@@ -1,17 +1,15 @@
-# wvez-landing
+# wvez-landing-v1
 
-Landing page for WVEZ Solutions, a Chicago-based automation studio.
+The first version of my personal site for WVEZ Solutions, a Chicago-based automation studio. Built April 2026. This is where it started.
 
-Live at [wvez.org](https://wvez.org). Vanilla HTML/CSS/JS. IBM Plex Mono throughout. Horizontal-scroll layout with Chicago landmark nav markers, 3D pendant (logo.glb) rendered via model-viewer, full-screen grayscale background video. Hosted on GitHub Pages.
+Superseded by [wvez-landing](https://github.com/warner-wvez/wvez-landing), which now serves [wvez.org](https://wvez.org). This repo is kept public on purpose, as a starting-point marker, not as the live site.
 
-## Contents
+Live snapshot of v1: [warner-wvez.github.io/wvez-landing-v1](https://warner-wvez.github.io/wvez-landing-v1/)
 
-- `index.html` — landing page
-- `logo.glb` — 3D pendant asset
-- Brand assets (favicons, hero images, custom cursor)
+## What it was
+
+A single-page, horizontal-scroll layout with Chicago landmark nav markers, a 3D pendant rendered via model-viewer, and a full-screen grayscale background video. Vanilla HTML, CSS, and JavaScript. IBM Plex Mono throughout. Hosted on GitHub Pages.
 
 ## Status
 
-Live. Active development.
-
-Part of [WVEZ Solutions](https://wvez.org).
+Archived. Superseded by [wvez-landing](https://github.com/warner-wvez/wvez-landing). The current site is live at [wvez.org](https://wvez.org).
